@@ -1,15 +1,15 @@
 # Mercado Pago official MCP wrapper
 
-Use this local wrapper when Pi or OpenCode cannot connect directly to Mercado Pago's remote MCP server. The existing `mercado-pago-docs` MCP remains available separately; this runner only bridges stdio to the official server through `mcp-remote`.
+Use this local wrapper when Pi or OpenCode cannot connect directly to Mercado Pago's remote MCP server. The runner bridges local stdio to the official server through `mcp-remote`.
 
 ## Quick path
 
-1. Install and build safely:
+1. Install, test, and build safely:
 
    ```bash
    pnpm install --ignore-scripts
-   pnpm build
    pnpm test
+   pnpm build
    ```
 
 2. Configure Pi or OpenCode to launch the compiled local wrapper:
@@ -20,7 +20,7 @@ Use this local wrapper when Pi or OpenCode cannot connect directly to Mercado Pa
        "mercado-pago-official": {
          "command": "node",
          "args": [
-           "/absolute/path/to/mcp-mercadopago-glosari/dist/mercadopago-official-wrapper/server.js"
+           "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
          ],
          "env": {
            "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
@@ -42,22 +42,13 @@ npx -y mcp-remote https://mcp.mercadopago.com/mcp --header Authorization:<AUTH_H
 
 Node `spawn` does not expand `Authorization:${AUTH_HEADER}`, so the wrapper builds the effective header in-process and redacts it from errors/stderr.
 
-## Existing docs MCP
+## Running manually
 
-The curated docs server is unchanged:
-
-```json
-{
-  "mcpServers": {
-    "mercado-pago-docs": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"]
-    }
-  }
-}
+```bash
+AUTH_HEADER="Bearer <ACCESS_TOKEN>" pnpm start
 ```
 
-`pnpm start` still launches `node dist/server.js`. Use `pnpm start:official` only for the official wrapper.
+`pnpm start` runs `node dist/server.js`, which is the wrapper entrypoint.
 
 ## Troubleshooting
 

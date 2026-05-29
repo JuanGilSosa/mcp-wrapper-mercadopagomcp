@@ -1,6 +1,12 @@
-# Mercado Pago Docs MCP
+# Mercado Pago official MCP wrapper
 
-TypeScript MCP capability for consulting **official Mercado Pago documentation only**. The first scope exposes search and read tools that return source-linked results and extracted documentation content.
+Local stdio wrapper for Mercado Pago's official remote MCP server. Use it when Pi, OpenCode, or another MCP client needs a local command but the real server lives at:
+
+```txt
+https://mcp.mercadopago.com/mcp
+```
+
+The wrapper validates `AUTH_HEADER`, starts `npx -y mcp-remote`, bridges stdio, and redacts the bearer token from stderr/errors.
 
 ## Quick path
 
@@ -10,75 +16,28 @@ TypeScript MCP capability for consulting **official Mercado Pago documentation o
    pnpm install --ignore-scripts
    ```
 
-2. Run the deterministic test suite:
+2. Run the test suite and build:
 
    ```bash
    pnpm test
+   pnpm build
    ```
 
-3. Build and start the stdio MCP server:
+3. Start the local wrapper:
 
    ```bash
-   pnpm build
-   pnpm start
+   AUTH_HEADER="Bearer <ACCESS_TOKEN>" pnpm start
    ```
-
-4. Use the MCP tools:
-   - `mercado_pago_search_docs` returns ranked official docs/reference matches.
-   - `mercado_pago_read_doc` returns extracted content from an allowlisted official docs URL or indexed `doc_id`.
 
 ## MCP client configuration
 
-This repository now exposes **two separate local MCP entrypoints**. Build first:
+Build first:
 
 ```bash
 pnpm build
 ```
 
-### 1. Curated docs MCP
-
-Use this when you want the local, deterministic documentation tools implemented in this repo:
-
-- `mercado_pago_search_docs`
-- `mercado_pago_read_doc`
-
-Generic stdio client config:
-
-```json
-{
-  "mcpServers": {
-    "mercado-pago-docs": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"]
-    }
-  }
-}
-```
-
-For local development, `pnpm start` launches this docs server:
-
-```bash
-pnpm start
-# node dist/server.js
-```
-
-### 2. Official Mercado Pago MCP wrapper
-
-Use this when Pi/OpenCode cannot connect directly to Mercado Pago's remote MCP. The wrapper is local stdio, but internally launches `mcp-remote` against:
-
-```txt
-https://mcp.mercadopago.com/mcp
-```
-
-Runtime requirement:
-
-```bash
-AUTH_HEADER="Bearer <ACCESS_TOKEN>"
-```
-
-Do **not** commit real tokens or client config files containing credentials.
-
-#### Pi / Claude-style config
+### Pi / Claude-style config
 
 ```json
 {
@@ -86,7 +45,7 @@ Do **not** commit real tokens or client config files containing credentials.
     "mercado-pago-official": {
       "command": "node",
       "args": [
-        "/absolute/path/to/mcp-mercadopago-glosari/dist/mercadopago-official-wrapper/server.js"
+        "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
       ],
       "env": {
         "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
@@ -96,9 +55,9 @@ Do **not** commit real tokens or client config files containing credentials.
 }
 ```
 
-#### OpenCode config
+### OpenCode config
 
-OpenCode uses a different local MCP schema: `command` is an argv array and environment variables go under `environment`.
+OpenCode uses a local MCP schema where `command` is an argv array and environment variables go under `environment`.
 
 ```json
 {
@@ -108,7 +67,7 @@ OpenCode uses a different local MCP schema: `command` is an argv array and envir
       "type": "local",
       "command": [
         "node",
-        "/absolute/path/to/mcp-mercadopago-glosari/dist/mercadopago-official-wrapper/server.js"
+        "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
       ],
       "environment": {
         "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
@@ -118,53 +77,29 @@ OpenCode uses a different local MCP schema: `command` is an argv array and envir
 }
 ```
 
-You can also smoke-test the wrapper manually:
+## What it runs
+
+The effective bridge command is:
 
 ```bash
-AUTH_HEADER="Bearer <ACCESS_TOKEN>" pnpm start:official
+npx -y mcp-remote https://mcp.mercadopago.com/mcp --header Authorization:<AUTH_HEADER>
 ```
+
+`AUTH_HEADER` must include the `Bearer ` prefix. The wrapper builds the authorization header in-process because shell-style variable expansion is not available inside Node `spawn` arguments.
+
+## Token safety
+
+- Do not commit real tokens.
+- Do not commit `.env` files or client config files containing credentials.
+- Error output and child stderr are redacted before being written by the wrapper.
+
+## Troubleshooting
+
+| Symptom | Check |
+|---------|-------|
+| missing `npx` | Install Node.js/npm in the environment used by the MCP client. |
+| missing or invalid `AUTH_HEADER` | Set `AUTH_HEADER` exactly as `Bearer <ACCESS_TOKEN>`. |
+| startup latency | `npx -y mcp-remote` may download or warm package cache before connecting. |
+| upstream official MCP errors | Verify the Mercado Pago token, permissions, country/account setup, and network access. |
 
 Full wrapper guide: `docs/mercadopago-official-wrapper.md`.
-
-## Boundaries
-
-| Topic | Decision |
-|-------|----------|
-| Sources | official Mercado Pago documentation only |
-| Search | local curated seed index; no arbitrary crawling |
-| Read | HTTPS allowlisted `/developers/{locale}/docs/**` and `/developers/{locale}/reference/**` pages |
-| Safety | rejects non-official hosts, localhost/IP/userinfo/non-standard ports, and unsafe redirects |
-| Output | source matches and extracted docs content only |
-| No Q&A synthesis | No Q&A synthesis, recommendations, conclusions, or business advice are generated |
-| Tests | mocked fetch and static fixtures only; no live Mercado Pago network dependency in `pnpm test` |
-
-## Safe dependency commands
-
-Every dependency command must include `--ignore-scripts`:
-
-```bash
-pnpm install --ignore-scripts
-pnpm add @modelcontextprotocol/sdk zod cheerio --ignore-scripts
-pnpm add -D typescript vitest @types/node --ignore-scripts
-pnpm test
-pnpm build
-pnpm start
-```
-
-## Current source matrix
-
-The first release keeps the official source matrix conservative:
-
-- `https://mercadopago.com/developers/{es|en|pt}/docs/**`
-- `https://mercadopago.com/developers/{es|en|pt}/reference/**`
-- `https://www.mercadopago.com/developers/{es|en|pt}/docs/**`
-- `https://www.mercadopago.com/developers/{es|en|pt}/reference/**`
-
-Country-specific hosts must not be added without a recorded verification artifact.
-
-## Review checklist
-
-- [ ] Tool outputs contain only source results or extracted source content.
-- [ ] URL validation runs before any fetch.
-- [ ] Tests use mocked fetch/static fixtures only.
-- [ ] Dependency install commands include `--ignore-scripts`.

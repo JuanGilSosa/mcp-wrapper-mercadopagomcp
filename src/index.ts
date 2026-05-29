@@ -1,1 +1,1 @@
-export * from "./mercadopago-docs/index.js";
+export * from "./mercadopago-official-wrapper/index.js";
