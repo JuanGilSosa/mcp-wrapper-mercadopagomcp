@@ -64,5 +64,6 @@ No dependency install/add command was required.
 ## Workload / PR boundary
 
 - Approved path: single PR under 800 lines.
-- Hand-authored changed/new implementation, tests, docs, and package/README wiring are approximately 671 lines by file line count; below 800.
+- Verify measured non-artifact changed lines at 836, above the prior 800-line boundary.
+- Maintainer explicitly approved a `size:exception` for 836 lines on 2026-05-29 because functional verification, tests/build, implementation review, and follow-up review passed.
 - The change is isolated to wrapper module, tests, docs, package script, and OpenSpec progress/tasks updates.
