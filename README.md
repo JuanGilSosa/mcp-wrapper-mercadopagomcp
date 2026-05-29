@@ -37,23 +37,49 @@ Build first:
 pnpm build
 ```
 
-### Pi / Claude-style config
+### Pi Agent config
+
+Pi Agent reads MCP servers from `mcp.json`. Add the server directly as an object named `mercado-pago-official`:
 
 ```json
 {
-  "mcpServers": {
-    "mercado-pago-official": {
-      "command": "node",
-      "args": [
-        "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
-      ],
-      "env": {
-        "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
-      }
-    }
+  "mercado-pago-official": {
+    "command": "node",
+    "args": [
+      "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
+    ],
+    "env": {
+      "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
+    },
+    "lifecycle": "lazy",
+    "directTools": true
   }
 }
 ```
+
+For example, with a local wrapper build:
+
+```json
+{
+  "mercado-pago-official": {
+    "command": "node",
+    "args": [
+      "/home/juan/my-mcp/wrapper-mercadopago/dist/mercadopago-official-wrapper/server.js"
+    ],
+    "env": {
+      "AUTH_HEADER": "Bearer APP_USR-****************************"
+    },
+    "lifecycle": "lazy",
+    "directTools": true
+  }
+}
+```
+
+Use an absolute path to the built `server.js` file and replace the token with your Mercado Pago access token. Keep real tokens out of git.
+
+The important part is that `args` points to the compiled file inside `dist`. Do not point Pi Agent at the TypeScript source file. If you change the wrapper source, run `pnpm build` again so `dist/server.js` stays up to date.
+
+A future npm package can make this easier by replacing the local absolute path with a package command such as `npx` or a package binary. Until that package is published, the supported setup is the local compiled `dist` path.
 
 ### OpenCode config
 
