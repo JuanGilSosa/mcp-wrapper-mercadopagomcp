@@ -1,0 +1,26 @@
+version: 1
+project:
+  name: mcp-mercadopago-glosari
+  stack:
+    language: TypeScript
+    target: MCP server
+    package_manager: pnpm
+sdd:
+  strict_tdd: true
+  execution_mode: interactive
+  pr_strategy: auto-forecast
+  review_budget_lines: 800
+  phase_rules:
+    - Do not implement production MCP features during init phase
+    - Author failing tests before implementation in apply phase
+constraints:
+  install:
+    manager: pnpm
+    require_ignore_scripts: true
+    install_command_rule: "All pnpm install/add commands must include --ignore-scripts"
+testing:
+  status: configured
+  runner: vitest
+  command: "pnpm test"
+  strict_tdd_cycle: "RED -> GREEN -> TRIANGULATE -> REFACTOR"
+  note: "Scaffold package.json and Vitest before production MCP features; dependency installs must use pnpm with --ignore-scripts."

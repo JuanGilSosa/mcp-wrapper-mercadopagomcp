@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# TypeScript artifacts accidentally emitted outside dist
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+!src/**/*.js
+
+# Local Pi runtime state
+.atl/
+.pi/
+.pi-lens/
