@@ -1,6 +1,6 @@
-# Mercado Pago official MCP wrapper
+# Mercado Pago MCP connector
 
-Use this local wrapper when Pi or OpenCode cannot connect directly to Mercado Pago's remote MCP server. The runner bridges local stdio to the official server through `mcp-remote`.
+Use this local wrapper when Pi or OpenCode cannot connect directly to Mercado Pago's remote MCP server. The runner bridges local stdio to Mercado Pago's official MCP server through `mcp-remote`.
 
 ## Quick path
 
@@ -17,10 +17,10 @@ Use this local wrapper when Pi or OpenCode cannot connect directly to Mercado Pa
    ```json
    {
      "mcpServers": {
-       "mercado-pago-official": {
+       "mercado-pago": {
          "command": "node",
          "args": [
-           "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
+           "/absolute/path/to/mcp-mercadopago/dist/server.js"
          ],
          "env": {
            "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
@@ -57,6 +57,6 @@ AUTH_HEADER="Bearer <ACCESS_TOKEN>" pnpm start
 | missing `npx` | Install Node.js/npm in the environment used by Pi/OpenCode. |
 | missing or invalid `AUTH_HEADER` | Set `AUTH_HEADER` exactly as `Bearer <ACCESS_TOKEN>`. |
 | startup latency | `npx -y mcp-remote` may download or warm package cache before connecting. |
-| upstream official MCP errors | Verify the Mercado Pago token, permissions, country/account setup, and network access to `https://mcp.mercadopago.com/mcp`. |
+| upstream Mercado Pago MCP errors | Verify the Mercado Pago token, permissions, country/account setup, and network access to `https://mcp.mercadopago.com/mcp`. |
 
 Do not commit real tokens, `.env` files, or client config files containing credentials.

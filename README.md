@@ -1,6 +1,6 @@
-# Mercado Pago official MCP wrapper
+# Mercado Pago MCP connector
 
-Local stdio wrapper for Mercado Pago's official remote MCP server. Use it when Pi, OpenCode, or another MCP client needs a local command but the real server lives at:
+Local stdio wrapper that connects MCP clients to Mercado Pago's official remote MCP server. Use it when Pi, OpenCode, or another MCP client needs a local command but the real server lives at:
 
 ```txt
 https://mcp.mercadopago.com/mcp
@@ -39,14 +39,14 @@ pnpm build
 
 ### Pi Agent config
 
-Pi Agent reads MCP servers from `mcp.json`. Add the server directly as an object named `mercado-pago-official`:
+Pi Agent reads MCP servers from `mcp.json`. Add the server directly as an object named `mercado-pago`:
 
 ```json
 {
-  "mercado-pago-official": {
+  "mercado-pago": {
     "command": "node",
     "args": [
-      "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
+      "/absolute/path/to/mcp-mercadopago/dist/server.js"
     ],
     "env": {
       "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
@@ -61,10 +61,10 @@ For example, with a local wrapper build:
 
 ```json
 {
-  "mercado-pago-official": {
+  "mercado-pago": {
     "command": "node",
     "args": [
-      "/home/juan/my-mcp/wrapper-mercadopago/dist/mercadopago-official-wrapper/server.js"
+      "/home/juan/my-mcp/wrapper-mercadopago/dist/server.js"
     ],
     "env": {
       "AUTH_HEADER": "Bearer APP_USR-****************************"
@@ -88,12 +88,12 @@ OpenCode uses a local MCP schema where `command` is an argv array and environmen
 ```json
 {
   "mcp": {
-    "mercado-pago-official": {
+    "mercado-pago": {
       "enabled": true,
       "type": "local",
       "command": [
         "node",
-        "/absolute/path/to/mcp-mercadopago-glosari/dist/server.js"
+        "/absolute/path/to/mcp-mercadopago/dist/server.js"
       ],
       "environment": {
         "AUTH_HEADER": "Bearer <ACCESS_TOKEN>"
@@ -126,6 +126,6 @@ npx -y mcp-remote https://mcp.mercadopago.com/mcp --header Authorization:<AUTH_H
 | missing `npx` | Install Node.js/npm in the environment used by the MCP client. |
 | missing or invalid `AUTH_HEADER` | Set `AUTH_HEADER` exactly as `Bearer <ACCESS_TOKEN>`. |
 | startup latency | `npx -y mcp-remote` may download or warm package cache before connecting. |
-| upstream official MCP errors | Verify the Mercado Pago token, permissions, country/account setup, and network access. |
+| upstream Mercado Pago MCP errors | Verify the Mercado Pago token, permissions, country/account setup, and network access. |
 
-Full wrapper guide: `docs/mercadopago-official-wrapper.md`.
+Full connector guide: `docs/mercadopago-official-wrapper.md`.
