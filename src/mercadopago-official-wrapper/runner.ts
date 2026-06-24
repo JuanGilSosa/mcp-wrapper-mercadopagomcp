@@ -41,6 +41,14 @@ export type OfficialWrapperRunResult = {
 };
 
 function defaultSpawn(...args: Parameters<SpawnLike>): ChildProcessLike {
+	if (process.platform === "win32") {
+		return nodeSpawn(
+			"cmd.exe",
+			["/d", "/c", args[0], ...args[1]],
+			args[2],
+		) as ChildProcessLike;
+	}
+
 	return nodeSpawn(args[0], args[1], args[2]) as ChildProcessLike;
 }
 

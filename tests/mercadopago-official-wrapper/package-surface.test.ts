@@ -7,10 +7,6 @@ import * as wrapperApi from "../../src/mercadopago-official-wrapper/index.js";
 
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 const readme = readFileSync("README.md", "utf8");
-const wrapperGuide = readFileSync(
-	"docs/mercadopago-official-wrapper.md",
-	"utf8",
-);
 
 describe("wrapper-only package surface", () => {
 	it("uses the official wrapper as the default package entrypoint", () => {
@@ -35,10 +31,8 @@ describe("wrapper-only package surface", () => {
 			"createMercadoPagoDocsMcpServer",
 			"mercadopago-docs",
 		];
-		for (const text of [readme, wrapperGuide]) {
-			for (const removed of removedSurface) {
-				expect(text).not.toContain(removed);
-			}
+		for (const removed of removedSurface) {
+			expect(readme).not.toContain(removed);
 		}
 	});
 });

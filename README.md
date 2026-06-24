@@ -8,6 +8,10 @@ https://mcp.mercadopago.com/mcp
 
 The wrapper validates `AUTH_HEADER`, starts `npx -y mcp-remote`, bridges stdio, and redacts the bearer token from stderr/errors.
 
+## Platform support
+
+This wrapper is tested on Linux and Windows. macOS is expected to work because it follows the same non-Windows spawn path as Linux, but it has not been tested yet.
+
 ## Quick path
 
 1. Install dependencies safely:
@@ -127,5 +131,3 @@ npx -y mcp-remote https://mcp.mercadopago.com/mcp --header Authorization:<AUTH_H
 | missing or invalid `AUTH_HEADER` | Set `AUTH_HEADER` exactly as `Bearer <ACCESS_TOKEN>`. |
 | startup latency | `npx -y mcp-remote` may download or warm package cache before connecting. |
 | upstream Mercado Pago MCP errors | Verify the Mercado Pago token, permissions, country/account setup, and network access. |
-
-Full connector guide: `docs/mercadopago-official-wrapper.md`.
