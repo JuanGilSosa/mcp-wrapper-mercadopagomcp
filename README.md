@@ -112,10 +112,25 @@ OpenCode uses a local MCP schema where `command` is an argv array and environmen
 The effective bridge command is:
 
 ```bash
-npx -y mcp-remote https://mcp.mercadopago.com/mcp --header Authorization:<AUTH_HEADER>
+npx -y mcp-remote https://mcp.mercadopago.com/mcp --header "Authorization:Bearer APP_USR-********"
 ```
 
-`AUTH_HEADER` must include the `Bearer ` prefix. The wrapper builds the authorization header in-process because shell-style variable expansion is not available inside Node `spawn` arguments.
+Expected output:
+
+```text
+[17239] Using automatically selected callback port: 4534
+[17239] Using custom headers: {"Authorization":"Bearer APP_USR-********"}
+[17239] Discovering OAuth server configuration...
+[17239] Discovered authorization server: https://mcp.mercadopago.com
+[17239] Connecting to remote server: https://mcp.mercadopago.com/mcp
+[17239] Using transport strategy: http-first
+[17239] Connected to remote server using StreamableHTTPClientTransport
+[17239] Local STDIO server running
+[17239] Proxy established successfully between local STDIO and remote StreamableHTTPClientTransport
+[17239] Press Ctrl+C to exit
+```
+
+`AUTH_HEADER` must include the `Bearer ` prefix. The wrapper builds the authorization header in-process because shell-style variable expansion is not available inside Node `spawn` arguments. When running the command manually in a shell, quote the full `Authorization:Bearer ...` header so the token remains part of the same argument.
 
 ## Token safety
 
